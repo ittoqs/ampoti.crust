@@ -70,6 +70,12 @@ int ampoti_compress(const char *output_path, const char **files, int num_files, 
                     len = fread(buff, 1, sizeof(buff), f);
                 }
                 fclose(f);
+            } else {
+                archive_entry_free(entry);
+                archive_read_free(disk);
+                archive_write_close(a);
+                archive_write_free(a);
+                return -1;
             }
         }
         
@@ -125,6 +131,9 @@ int ampoti_extract(const char *archive_path, const char *output_dir, const char 
         const char *current_path = archive_entry_pathname(entry);
         char *full_path = NULL;
         if (current_path != NULL && output_dir != NULL) {
+            while (*current_path == '/' || *current_path == '\\') {
+                current_path++;
+            }
             size_t out_len = strlen(output_dir);
             size_t path_len = strlen(current_path);
             full_path = (char*)malloc(out_len + path_len + 2);
