@@ -76,8 +76,15 @@ impl Application for AmpotiApp {
                 Command::perform(
                     async move {
                         tokio::task::spawn_blocking(move || {
+                            let mut files = Vec::new();
+                            collect_files(std::path::Path::new(&file_path), &mut files)?;
+
+                            if files.is_empty() {
+                                return Err("No files found to compress.".to_string());
+                            }
+
+                            let files_ref: Vec<&str> = files.iter().map(|s| s.as_str()).collect();
                             let pwd_deref = pwd.as_deref();
-                            let files_ref: Vec<&str> = vec![&file_path];
                             ffi::compress_files(&out_path, &files_ref, pwd_deref, "zip")
                         })
                         .await
@@ -163,4 +170,16 @@ impl Application for AmpotiApp {
             .center_y()
             .into()
     }
+}
+
+fn collect_files(path: &std::path::Path, files: &mut Vec<String>) -> Result<(), String> {
+    if path.is_file() {
+        files.push(path.to_string_lossy().into_owned());
+    } else if path.is_dir() {
+        for entry in std::fs::read_dir(path).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            collect_files(&entry.path(), files)?;
+        }
+    }
+    Ok(())
 }

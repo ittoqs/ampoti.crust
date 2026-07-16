@@ -27,13 +27,16 @@ pub fn compress_files(
     let out_path_c = CString::new(output_path).map_err(|_| "Invalid output path")?;
     let format_c = CString::new(format).map_err(|_| "Invalid format")?;
     
-    let password_c = password.map(|p| CString::new(p).unwrap());
+    let password_c = match password {
+        Some(p) => Some(CString::new(p).map_err(|_| "Invalid password")?),
+        None => None,
+    };
 
     // Mempersiapkan array CStrings agar alokasinya tetap hidup selama FFI call
-    let files_c: Vec<CString> = files
-        .iter()
-        .map(|&f| CString::new(f).unwrap())
-        .collect();
+    let mut files_c = Vec::new();
+    for &f in files {
+        files_c.push(CString::new(f).map_err(|_| "Invalid file path")?);
+    }
 
     // Mempersiapkan array of pointers ke CStrings
     let files_ptrs: Vec<*const c_char> = files_c
@@ -68,7 +71,10 @@ pub fn extract_archive(
 ) -> Result<(), String> {
     let arch_path_c = CString::new(archive_path).map_err(|_| "Invalid archive path")?;
     let out_dir_c = CString::new(output_dir).map_err(|_| "Invalid output directory")?;
-    let password_c = password.map(|p| CString::new(p).unwrap());
+    let password_c = match password {
+        Some(p) => Some(CString::new(p).map_err(|_| "Invalid password")?),
+        None => None,
+    };
 
     let pwd_ptr = password_c.as_ref().map_or(ptr::null(), |p| p.as_ptr());
 
