@@ -1,44 +1,50 @@
-# Ampoti CRust
+# 📦 Ampoti Archiver (CRust)
 
-> Aplikasi *desktop archiver* native berkinerja tinggi, memadukan keamanan memori Rust dengan kecepatan I/O bahasa C.
+[![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg?style=flat&logo=rust)](https://www.rust-lang.org/)
+[![C Language](https://img.shields.io/badge/C-11-blue.svg?style=flat&logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![Platform](https://img.shields.io/badge/Platform-Desktop-lightgrey.svg?style=flat)](https://github.com/)
+[![GUI Framework](https://img.shields.io/badge/UI-Iced-blueviolet.svg?style=flat)](https://github.com/iced-rs/iced)
+[![Async Runtime](https://img.shields.io/badge/Async-Tokio-black.svg?style=flat)](https://tokio.rs/)
+[![Core Engine](https://img.shields.io/badge/Engine-Libarchive-red.svg?style=flat)](https://www.libarchive.org/)
 
-**Ampoti File** adalah aplikasi *desktop archiver* murni (Native GUI) yang dibangun menggunakan kolaborasi dua bahasa tingkat sistem: **Rust** dan **C**. Proyek ini dirancang khusus untuk mengedepankan keamanan memori, performa I/O tingkat rendah, dan pengalaman pengguna yang responsif tanpa hambatan.
-
----
-
-## ✨ Fitur
-
-* **100% Native & Ringan:** Antarmuka dirender langsung menggunakan GPU/CPU melalui framework [Iced](https://github.com/iced-rs/iced) (berbasis arsitektur Elm). Tidak ada *overhead* dari peramban web atau Electron.
-* **Core Engine C Super Cepat:** Operasi kompresi dan ekstraksi ditangani langsung oleh `libarchive` menggunakan bahasa C. Engine ini diisolasi di dalam `core` untuk memastikan performa maksimal.
-* **Dukungan Format Komprehensif:** 
-  * **Kompresi:** `ZIP`, `7Z` *(Default: ZIP)*.
-  * **Ekstraksi:** `RAR`, `ZIP`, `7Z`.
-* **UI Responsif Non-Blocking (60fps):** Proses *blocking* I/O (seperti mengekstrak file berukuran gigabyte) dijalankan pada *background thread* terpisah melalui integrasi FFI dan `tokio`. Aplikasi dijamin tidak akan pernah mengalami *freeze* atau *Not Responding*.
-* **Keamanan Ketat (Anti-Zip Slip):** Engine C dilengkapi dengan proteksi bawaan untuk memitigasi celah keamanan *Directory Traversal* (mencegah ekstraksi file berbahaya bermotif `../` ke luar direktori target).
+Ampoti Archiver Crust is a high-performance native desktop archiver that combines Rust's memory safety with the raw I/O speed of C. Built with a pure native GUI, it leverages system-level programming to prioritize memory efficiency, low-level I/O performance, and a buttery-smooth, responsive user experience.
 
 ---
 
-## 🏗️ Struktur
+## ✨ Features
 
-Proyek ini memisahkan logika antarmuka (Rust) dan pemrosesan file tingkat rendah (C) secara elegan:
+* **⚡ 100% Native & Lightweight:** Direct GPU/CPU rendering using the [Iced](https://github.com/iced-rs/iced) framework (Elm architecture). Zero overhead from web browsers or Electron engines.
+* **🚀 High-Speed C Engine:** Fast compression and extraction operations powered directly by `libarchive` in C, isolated within the core module for maximum throughput.
+* **📂 Comprehensive Format Support:**
+  * **Compression:** `ZIP`, `7Z` *(Default: ZIP)*.
+  * **Extraction:** `RAR`, `ZIP`, `7Z`.
+* **🎯 Non-Blocking 60fps UI:** Heavy I/O operations run seamlessly on isolated background threads via FFI and `tokio`, guaranteeing zero frozen windows or "Not Responding" states.
+* **🛡️ Hardened Security (Anti-Zip Slip):** Built-in C engine protection against Directory Traversal attacks, preventing malicious `../` paths during extraction.
+
+---
+
+## 🛠️ Tech Stack
+
+This project is built using powerful, modern system-level libraries and frameworks:
+
+* **[Rust](https://www.rust-lang.org/)** - Safe, concurrent, and practical systems programming language.
+* **[C Language](https://en.wikipedia.org/wiki/C_(programming_language))** - Ultra-fast low-level file manipulation engine.
+* **[Iced](https://github.com/iced-rs/iced)** - Cross-platform GUI library for Rust focused on simplicity and type-safety.
+* **[Tokio](https://tokio.rs/)** - Event-driven, non-blocking I/O platform for asynchronous execution.
+* **[Libarchive](https://www.libarchive.org/)** - Multi-format archive and compression library.
+
+---
+
+## 🏗️ Project Structure
+
+The project elegantly separates UI logic (Rust) from low-level file processing (C):
 
 ```text
-ampoti-file/
-├── core/                       # C Engine untuk manipulasi file (libarchive)
-├── build.rs                    # Skrip kompilator statis C ke dalam ekosistem Rust
-├── Cargo.toml                  # Manajemen dependensi (Iced, Tokio, Libc, dll.)
+ampoti-crust/
+├── core/                       # C Engine for file manipulation (libarchive)
+├── build.rs                    # Static compiler script joining C into Rust ecosystem
+├── Cargo.toml                  # Dependency management (Iced, Tokio, Libc, etc.)
 └── src/                        # [UI & BINDING]
-    ├── ffi.rs                  # Safe Wrapper (Jembatan aman) dari C ke ekosistem Rust
-    ├── app.rs                  # Logika State, Update, dan View dari antarmuka Iced
-    └── main.rs                 # Entry point eksekusi aplikasi
-```
-
----
-
-## 🤝 Kontribusi
-
-Kontribusi, pelaporan *bug* (*issues*), dan permintaan fitur (*feature requests*) sangat dipersilakan! Jangan ragu untuk membuka *pull request* untuk meningkatkan performa atau menambahkan format baru.
-
-## 📄 Lisensi
-
-Proyek ini didistribusikan di bawah lisensi [MIT](LICENSE).
+    ├── ffi.rs                  # Safe Wrapper bridging C with Rust ecosystem
+    ├── app.rs                  # State, Update, and View logic for Iced UI
+    └── main.rs                 # Execution entry point
